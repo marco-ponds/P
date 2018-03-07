@@ -1,4 +1,6 @@
-class Ball extends Particle2D {
+import Particle from './particle';
+
+class Ball extends Particle {
 
     constructor({ radius, color, mass, charge, gradient} = {}) {
 
@@ -6,8 +8,7 @@ class Ball extends Particle2D {
        
        this.radius = radius === undefined ? 20 : radius;
        this.color = color === undefined ? '#0000ff' : color;
-       this.gradient = gradient === undefined ? false : gradient;
-       
+       this.gradient = gradient === undefined ? false : gradient;   
    }
 
    draw(context) {
@@ -28,3 +29,5 @@ class Ball extends Particle2D {
        context.fill();
    }
 }
+
+export default Ball;

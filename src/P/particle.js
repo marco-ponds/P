@@ -1,10 +1,12 @@
-class Particle2D {
+import Vector from './vector';
+
+class Particle {
     
     constructor({ mass, charge } = {}) {
         this.mass = mass === undefined ? 1 : mass;
         this.charge = charge === undefined ? 0 : charge;
-        this._position = new Vector2D(0, 0);
-        this._velocity = new Vector2D(0, 0);
+        this._position = new Vector(0, 0);
+        this._velocity = new Vector(0, 0);
     }
     
     set position(pos) {
@@ -41,3 +43,5 @@ class Particle2D {
         return this;
     }
 }
+
+export default Particle;

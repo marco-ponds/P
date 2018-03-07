@@ -8,7 +8,8 @@ const config = {
         library: 'P',
         libraryTarget: 'umd',
         path: path.resolve(__dirname, 'dist'),
-        filename: 'bundle.js',
+        filename: 'P.js',
+        umdNamedDefine: true
     },
     module: {
         rules: [
@@ -17,16 +18,28 @@ const config = {
                 include: [
                     path.resolve(__dirname, 'src')
                 ],
-                exclude: [
-                    path.resolve(__dirname, 'node_modules')
-                ],
                 loader: 'babel-loader',
-                query: {
-                    compact: false // because I want readable output
+                options: {
+                    presets: ['es2015']
                 }
             }
         ]
-    }
+    },
+    resolve: {
+        modules: [
+            'node_modules',
+            path.resolve(__dirname, 'src')
+        ]
+    },
+    stats: {
+        assets: true,
+        colors: true,
+        errors: true,
+        errorDetails: true,
+        hash: true
+        
+    },
+    target: 'web'
 };
 
-
+module.exports = config;
