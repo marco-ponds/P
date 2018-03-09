@@ -31,14 +31,6 @@ const config = {
             path.resolve(__dirname, 'src')
         ]
     },
-    stats: {
-        assets: true,
-        colors: true,
-        errors: true,
-        errorDetails: true,
-        hash: true
-        
-    },
     target: 'web'
 };
 

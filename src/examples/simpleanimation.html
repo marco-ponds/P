@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8" />
+        <title>Simple Animation</title>
+    </head>
+
+    <body>
+
+        <canvas id='canvas' />
+
+        <!-- Scripts -->
+        <script src="../../dist/P.js"></script>
+        <script>
+            window.ball;
+            var context;
+            var t;
+            var t0;
+            var t1;
+            var dt;
+            var animId;
+
+            var acceleration;
+
+            window.onload = init;
+            
+            function init() {
+
+                var canvas = document.getElementById('canvas');
+                context = canvas.getContext('2d');
+
+                var H = 400;
+                var W = 1400;
+                var RADIUS = 2;
+
+                canvas.height = H;
+                canvas.width = W;
+
+                const options = {
+                    radius: 10,
+                    color: '#ff0000',
+                    mass: 1,
+                    charge: 0,
+                    gradient: false
+                };
+                
+                acceleration = new P.Vector(0, 10);
+
+                ball = new P.Ball(options);
+                ball.position = new P.Vector(100, 150);
+                ball.velocity = new P.Vector(50, -20);
+                ball.draw(context);
+                t0 = Date.now();//new Date().getTime();
+                t = 0;
+                animFrame();
+            };
+            
+            function animFrame(){
+                animId = requestAnimationFrame(animFrame);
+                onTimer();
+            }
+            function onTimer(){
+                t1 = Date.now()//new Date().getTime();
+                dt = 0.001 * (t1-t0 + 0.001);
+                t0 = t1;
+                t += dt;
+                move();
+            }
+            function move(){
+                //ball.updateVelocity(new Vector2D(1, 9.8), dt);
+                //ball.updatePosition(dt);
+                // ball.velocity = ball.velocity.addScaled(new Vector2D(1, 9.8), dt);
+                // ball.position = ball.position.addScaled(ball.velocity, dt);
+            
+                ball.position = ball.position.addScaled(ball.velocity, t).addScaled(acceleration,0.5*t*t);
+                ball.velocity = ball.velocity.addScaled(acceleration, t);
+                
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                ball.draw(context);
+            }
+
+            function stop(){
+                cancelAnimationFrame(animId);
+            }
+        
+        </script>
+    </body>
+
+</html>
