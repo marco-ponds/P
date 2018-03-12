@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8" />
+        <title>Simple Animation</title>
+    </head>
+
+    <body>
+
+        <canvas id='canvas' height="600" width="800" />
+
+        <!-- Scripts -->
+        <script src="../../dist/P.js"></script>
+        <script>
+            window.ball;
+            var t;
+            var t0;
+            var t1;
+            var dt;
+            var animId;
+
+            var acceleration;
+            
+            var canvas = document.getElementById('canvas');
+            var context = canvas.getContext('2d');
+            
+            var car;
+            var t;
+            var t0;
+            var dt;
+            var animId;
+            var graph;
+            var force;
+            var acc;
+            var g = 10;
+            var k = 0.5;
+            var animTime = 60; // duration of animation
+            
+            var powerLossFactor=0.1;
+            var powerApplied=1050;
+            var ke;
+            var vmag;
+            var mass;
+            var applyThrust=false;
+            
+            window.onload = init;
+            
+            function init() {
+                car = new P.Ball({radius: 15, color: '#000000', mass: 1, charge: 0, gradient: true});
+                car.position = new P.Vector(150, 150);
+                car.velocity=new P.Vector(20, 0);
+                car.draw(context);
+                mass = car.mass;
+                vmag = car.velocity.length();
+                ke = 0.5*mass*vmag*vmag; // kinetic energy, 1/2 mv^2
+                window.addEventListener('keydown',startThrust,false);
+                window.addEventListener('keyup',stopThrust,false);
+                //setupGraphs();
+            
+                t0 = new Date().getTime();
+                t = 0;
+                animFrame();
+            };
+            
+            function startThrust(evt){
+                if (evt.keyCode==38){
+                    applyThrust = true;
+                }
+            }
+            function stopThrust(){
+                console.log('keyup')
+                applyThrust = false;
+            }
+            
+            function animFrame(){
+                animId = requestAnimationFrame(animFrame,canvas);
+                onTimer();
+            }
+            function onTimer(){
+                var t1 = new Date().getTime();
+                dt = 0.001*(t1-t0);
+                t0 = t1;
+                if (dt>0.2) {dt=0;}; // fix for bug if user switches tabs
+                t += dt;
+                //console.log(dt,t,t0,animTime);
+                if (t < animTime){
+                    move();
+                }else{
+                    stop();
+                }
+            }
+            function move(){
+                moveObject();
+                applyPower();
+                updateVelo();
+            }
+            
+            function moveObject(){
+                car.position = car.position.addScaled(car.velocity, dt);
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                car.draw(context);
+            }
+            function applyPower(){
+                if (applyThrust){
+                    ke += powerApplied*dt;
+                }
+                ke -= powerLossFactor*vmag*vmag*dt;
+            }
+            function updateVelo(){
+                vmag = Math.sqrt(2*ke/mass);
+                car.velocity.set(vmag);
+            }
+            function stop(){
+                cancelAnimationFrame(animId);
+            }
+        
+        </script>
+    </body>
+
+</html>
