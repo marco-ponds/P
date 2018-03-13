@@ -1,7 +1,6 @@
-const constants = {
-    G: 10,
-    TIME_FRACTION: 0.005,
-    MINIMUM_TIME_DIFFERENCE: 0.2
-};
+// gravity
+export const G = 10;
 
-export default constants;
+// time related constants
+export const TIME_FRACTION = 0.005;
+export const MINIMUM_TIME_DIFFERENCE = 0.2;

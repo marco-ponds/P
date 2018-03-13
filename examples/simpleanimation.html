@@ -8,10 +8,10 @@
 
     <body>
 
-        <canvas id='canvas' />
+        <canvas id='canvas'/>
 
         <!-- Scripts -->
-        <script src="../../dist/P.js"></script>
+        <script src="../dist/P.js"></script>
         <script>
             window.ball;
             var context;
@@ -24,7 +24,7 @@
             var acceleration;
 
             window.onload = init;
-            
+
             function init() {
 
                 var canvas = document.getElementById('canvas');
@@ -44,7 +44,7 @@
                     charge: 0,
                     gradient: false
                 };
-                
+
                 acceleration = new P.Vector(0, 10);
 
                 ball = new P.Ball(options);
@@ -55,7 +55,7 @@
                 t = 0;
                 animFrame();
             };
-            
+
             function animFrame(){
                 animId = requestAnimationFrame(animFrame);
                 onTimer();
@@ -72,10 +72,10 @@
                 //ball.updatePosition(dt);
                 // ball.velocity = ball.velocity.addScaled(new Vector2D(1, 9.8), dt);
                 // ball.position = ball.position.addScaled(ball.velocity, dt);
-            
+
                 ball.position = ball.position.addScaled(ball.velocity, t).addScaled(acceleration,0.5*t*t);
                 ball.velocity = ball.velocity.addScaled(acceleration, t);
-                
+
                 context.clearRect(0, 0, canvas.width, canvas.height);
                 ball.draw(context);
             }
@@ -83,7 +83,7 @@
             function stop(){
                 cancelAnimationFrame(animId);
             }
-        
+
         </script>
     </body>
 

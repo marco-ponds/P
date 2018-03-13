@@ -17,7 +17,6 @@ function plot(f, amount, range) {
     // f = f(x) => return x*2; amount is granularity, rangeX = [-1, 1];
     var step = (Math.abs(range[0]) + Math.abs(range[1]))/amount;
     for (var x=range[0]; x<range[1]; x+= step) {
-        console.log(x);
         drawCircle(x, f(x));
     }
 }

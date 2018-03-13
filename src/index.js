@@ -2,7 +2,7 @@ import Vector from './P/vector';
 import Particle from './P/particle';
 import Ball from './P/ball';
 import Forces from './P/forces';
-import Constants from './P/constants';
+import * as CONSTANTS from './P/constants';
 import Core from './P/core';
 
 export {
@@ -10,6 +10,6 @@ export {
     Particle,
     Ball,
     Forces,
-    Constants,
+    CONSTANTS,
     Core
 }
