@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8" />
+        <title>Simple Animation</title>
+    </head>
+
+    <body>
+
+        <canvas id='canvas' height="600" width="800" />
+
+        <!-- Scripts -->
+        <script src="../../dist/P.js"></script>
+        <script>
+            var canvas = document.getElementById('canvas');
+            var context = canvas.getContext('2d');
+            
+            var ball;
+            var t;
+            var t0;
+            var dt;
+            var animId;
+            var force;
+            var acc;
+            var g = 10;
+            var k = 0.1;
+            var animTime = 12; // duration of animation
+            
+            window.onload = init;
+            
+            function init() {
+                ball = new P.Ball({radius: 15, color: '#0000ff', mass: 10, charge: 0, gradient: true});
+                ball.position = new P.Vector(50, 400);
+                ball.velocity = new P.Vector(60, -60);
+                ball.draw(context);
+                P.Core.init();
+                animFrame();
+            };
+            function animFrame(){
+                animId = requestAnimationFrame(animFrame,canvas);
+                onTimer();
+            }
+            function onTimer(){
+                // var t1 = new Date().getTime();
+                // dt = 0.005*(t1-t0);
+                // t0 = t1;
+                // if (dt>0.2) {dt=0;};
+                // t += dt;
+                //P.Core.update();
+                if (P.Core.t < animTime){
+                    move();
+                }else{
+                    stop();
+                }
+            }
+            function move(){
+                moveObject();
+                calcForce();
+                updateAccel();
+                updateVelo();
+            }
+            function stop(){
+                cancelAnimationFrame(animId);
+            }
+            function moveObject(){
+                ball.position = ball.position.addScaled(ball.velocity, P.Core.dt);
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                ball.draw(context);
+            }
+            function calcForce(){
+                var gravity = P.Forces.constantGravity(ball.mass, P.Constants.G);
+                var drag = P.Forces.drag(k, ball.velocity);
+                force = P.Forces.add([gravity, drag]);
+            }
+            function updateAccel(){
+                acc = force.clone().scale(1 / ball.mass);
+            }
+            function updateVelo(){
+                ball.velocity = ball.velocity.addScaled(acc, P.Core.dt);
+            }
+        
+        </script>
+    </body>
+
+</html>
