@@ -1,4 +1,7 @@
 import Vector from './vector';
+import {
+    GRAVITATIONAL_CONSTANT
+} from './constants';
 
 export default class Forces {
 
@@ -8,6 +11,10 @@ export default class Forces {
 
     static constantGravity(mass, g) {
         return new Vector(0, mass * g);
+    }
+
+    static gravity(m1, m2, r) {
+        return r.clone().scale(-GRAVITATIONAL_CONSTANT * m1 * m2 /(r.lengthSquared() * r.length()))
     }
 
     static drag(k, velocity) {

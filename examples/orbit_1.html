@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8" />
+        <title>Simple Animation</title>
+
+        <style>
+            canvas {
+                position: absolute;
+            }
+
+            #canvas {
+                z-index: 2;
+            }
+
+            #canvas_bg {
+                background: darkblue;
+                z-index: 1;
+            }
+
+        </style>
+    </head>
+
+    <body>
+
+        <canvas id='canvas' height="600" width="800"></canvas>
+        <canvas id='canvas_bg' height="600" width="800"></canvas>
+
+        <!-- Scripts -->
+        <script src="../dist/P.js"></script>
+        <script>
+            var canvas = document.getElementById('canvas');
+            var context = canvas.getContext('2d');
+            var canvas_bg = document.getElementById('canvas_bg');
+            var context_bg = canvas_bg.getContext('2d');
+            
+            var planet;
+            var sun;
+            var m = 1; // planet's mass
+            var M = 1000000; // sun's mass
+            var G = 1;
+            var t0,dt;
+            
+            window.onload = init;
+            
+            function init() {
+                // create 100 stars randomly positioned
+                for (var i=0; i<100; i++){
+                    var star = new P.Ball({radius: Math.random()*2, color: '#ffff00'});
+                    star.position= new P.Vector(Math.random() * canvas_bg.width, Math.random() * canvas_bg.height);
+                    star.draw(context_bg);
+                }
+                // create a stationary sun
+                sun = new P.Ball({radius: 70, color: '#ff9900', mass: M, charge: 0});
+                sun.position = new P.Vector(275,200);
+                sun.draw(context_bg);
+                // create a moving planet
+                planet = new P.Ball({radius: 10, color: '#0000ff', mass: m, charge: 0});
+                planet.position = new P.Vector(200,50);
+                planet.velocity = new P.Vector(70,-40);
+                planet.draw(context);
+                // make the planet orbit the sun
+                P.Core.init();
+                animFrame();
+            };
+            
+            function animFrame() {
+                animId = requestAnimationFrame(animFrame,canvas);
+                onTimer();
+            }
+
+            function onTimer() {
+                P.Core.update();
+                move();
+            }
+
+            function move() {
+                moveObject(planet);
+                calcForce();
+                updateAccel();
+                updateVelo(planet);
+            }
+            
+            function moveObject(obj) {
+                //obj.position = obj.position.addScaled(obj.velocity, P.Core.time.dt);
+                obj.updatePosition(P.Core.time.dt);
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                obj.draw(context);
+            }
+            function calcForce() {
+                force = P.Forces.gravity(M, m, planet.position.subtract(sun.position));
+            }
+            function updateAccel(obj) {
+                acc = force.clone().scale(1/m);
+            }
+            function updateVelo(obj) {
+                obj.updateVelocity(acc, P.Core.time.dt);
+            }
+
+        </script>
+    </body>
+
+</html>

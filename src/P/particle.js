@@ -7,6 +7,7 @@ class Particle {
         this.charge = charge === undefined ? 0 : charge;
         this._position = new Vector(0, 0);
         this._velocity = new Vector(0, 0);
+        this._acceleration = new Vector(0, 0);
     }
     
     set position(pos) {
@@ -17,6 +18,16 @@ class Particle {
 
     get position() {
         return this._position;
+    }
+
+    set acceleration(acc) {
+        if (pos) {
+            this._acceleration.set(acc.x, acc.y);
+        }
+    }
+
+    get acceleration() {
+        return this._acceleration;
     }
     
     set velocity(v) {

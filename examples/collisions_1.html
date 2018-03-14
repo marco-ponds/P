@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8" />
+        <title>Simple Animation</title>
+
+        <style>
+            canvas {
+                position: absolute;
+            }
+        </style>
+    </head>
+
+    <body>
+
+        <canvas id='canvas' height="600" width="800"></canvas>
+
+        <!-- Scripts -->
+        <script src="../dist/P.js"></script>
+        <script>
+            var canvas = document.getElementById('canvas');
+            var context = canvas.getContext('2d');
+            var t0;
+            var dt;
+            var animId;
+            var radius = 15; // ball radius
+            var balls = new Array();
+            
+            window.onload = init;
+            
+            function init() {
+                makeBalls();
+                P.Core.init();
+                animFrame();
+            };
+            
+            function makeBalls(){
+                setupBall('#0000ff',new P.Vector(50,100),new P.Vector(30,10));
+                setupBall('#ff0000',new P.Vector(500,200),new P.Vector(-20,0));
+                setupBall('#00ff00',new P.Vector(300,230),new P.Vector(10,0));
+                setupBall('#0f0f00',new P.Vector(200,50),new P.Vector(10,10));
+            }
+            function setupBall(color,pos,velo){
+                var ball = new P.Ball({radius,color, mass:1, charge: 0});
+                ball.position = pos;
+                ball.velocity = velo;
+                ball.draw(context);
+                balls.push(ball);
+            }
+                
+            function animFrame(){
+                animId = requestAnimationFrame(animFrame,canvas);
+                onTimer();
+            }
+            function onTimer(){
+                P.Core.update();
+                checkCollision();
+                move();
+            }
+            function move(){
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                for (var i=0; i<balls.length; i++){
+                    var ball = balls[i];
+                    ball.position = ball.position.addScaled(ball.velocity, P.Core.time.dt);
+                    ball.draw(context);
+                }
+            }
+            function checkCollision(){
+                for (var i=0; i<balls.length; i++){
+                    var ball1 = balls[i];
+                    for (var j=i+1; j<balls.length; j++){
+                        var ball2 = balls[j];
+                        if (P.Vector.distance(ball1.position, ball2.position)<=ball1.radius+ball2.radius){
+                                var vtemp = ball1.velocity.clone();
+                                ball1.velocity = ball2.velocity.clone();
+                                ball2.velocity = vtemp;
+                        }
+                    }
+                }
+            }
+
+        </script>
+    </body>
+
+</html>
