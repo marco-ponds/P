@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8" />
+        <title>Simple Animation</title>
+
+        <style>
+            canvas {
+                position: absolute;
+            }
+
+            #canvas {
+                z-index: 2;
+            }
+
+            #canvas_bg {
+                background: darkblue;
+                z-index: 1;
+            }
+
+        </style>
+    </head>
+
+    <body>
+
+        <canvas id='canvas' height="600" width="800"></canvas>
+        <canvas id='canvas_bg' height="600" width="800"></canvas>
+
+        <!-- Scripts -->
+        <script src="../dist/P.js"></script>
+        <script>
+            var canvas = document.getElementById('canvas');
+            var context = canvas.getContext('2d');
+            var canvas_bg = document.getElementById('canvas_bg');
+            var context_bg = canvas_bg.getContext('2d');
+            
+            var rocket;
+            var massPlanet;
+            var centerPlanet;
+            var radiusPlanetSquared;
+            var G = 0.1;
+            var dmdt = 0.5;
+            var dmdtSide= 0.1;
+            var fuelMass = 3.5;
+            var fuelSideMass = 3.5;
+            var fuelUsed = 0;
+            var fuelSideUsed = 0;
+            var ve = new P.Vector(0,240);
+            var veSide = new P.Vector(-100,0);
+            var applySideThrust = false;
+            var showExhaust = true;
+            var orientation = 1;
+            var animId;
+            var t0, dt;
+            
+            window.onload = init;
+            
+            function init() {
+                // create 100 stars randomly positioned
+                for (var i=0; i<100; i++){
+                    var star = new P.Ball({radius: 1, color: '#ffff00'});
+                    star.position= new P.Vector(Math.random()*canvas_bg.width,Math.random()*canvas_bg.height);
+                    star.draw(context_bg);
+                }
+                // create a stationary planet planet
+                planet = new P.Ball({radius: 100, color: '#0033ff', mass: 100000});
+                planet.position = new P.Vector(400,400);
+                planet.draw(context_bg);
+                massPlanet = planet.mass;
+                centerPlanet = planet.position;
+                radiusPlanetSquared = planet.radius*planet.radius;
+                // create a rocket
+                rocket = new P.Ball({radius: 12, mass: 12, color:'#cccccc'});
+                rocket.position = new P.Vector(400,300);
+                rocket.draw(context);
+                // set up event listeners
+                window.addEventListener('keydown',startSideThrust,false);
+                window.addEventListener('keyup',stopSideThrust,false);
+                // launch the rocket
+                P.Core.init();
+                animFrame();
+            };
+            
+            function animFrame(){
+                animId = requestAnimationFrame(animFrame,canvas);
+                onTimer();
+            }
+            function onTimer(){
+                P.Core.update();
+                move();
+            }
+            function move(){
+                moveObject();
+                calcForce();
+                updateAccel();
+                updateVelo();
+                updateMass();
+                monitor();
+            }
+            
+            function moveObject(){
+                rocket.position = rocket.position.addScaled(rocket.velocity,P.Core.time.dt);
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                rocket.draw(context,showExhaust);
+            }
+            function calcForce(){
+                var gravity = P.Forces.gravity(massPlanet,rocket.mass,rocket.position.subtract(centerPlanet));
+                var thrust = new P.Vector(0,0);
+                var thrustSide = new P.Vector(0,0);
+                if (fuelUsed < fuelMass){
+                    thrust = ve.clone().scale(-dmdt);
+                }
+                if (fuelSideUsed < fuelSideMass && applySideThrust){
+                    thrustSide = veSide.clone().scale(-dmdtSide*orientation);
+                }
+                force = P.Forces.add([gravity, thrust, thrustSide]);
+            }
+            function updateAccel(){
+                acc = force.clone().scale(1/rocket.mass);
+            }
+            function updateVelo(){
+                rocket.velocity = rocket.velocity.addScaled(acc,P.Core.time.dt);
+            }
+            function updateMass(){
+                if (fuelUsed < fuelMass){
+                    fuelUsed += dmdt*P.Core.time.dt;
+                    rocket.mass += -dmdt*P.Core.time.dt;
+                }
+                if (fuelSideUsed < fuelSideMass && applySideThrust){
+                    fuelSideUsed += dmdtSide*P.Core.time.dt;
+                    rocket.mass += -dmdtSide*P.Core.time.dt;
+                }
+            }
+            function monitor(){
+                if (showExhaust && fuelUsed >= fuelMass){
+                    showExhaust = false;
+                }
+                if (rocket.position.subtract(centerPlanet).lengthSquared() < radiusPlanetSquared){
+                    stop();
+                }
+            }
+            function startSideThrust(evt){
+                if (evt.keyCode==39){ // right arrow
+                    applySideThrust = true;
+                    orientation = 1;
+                }
+                if (evt.keyCode==37){ // left arrow
+                    applySideThrust = true;
+                    orientation = -1;
+                }
+            }
+            function stopSideThrust(evt){
+                applySideThrust = false;
+            }
+            function stop(){
+                cancelAnimationFrame(animId);
+            }
+
+        </script>
+    </body>
+
+</html>

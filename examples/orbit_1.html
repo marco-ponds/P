@@ -38,7 +38,7 @@
             var planet;
             var sun;
             var m = 1; // planet's mass
-            var M = 1000000; // sun's mass
+            var M = 10000; // sun's mass
             var G = 1;
             var t0,dt;
             
@@ -58,7 +58,7 @@
                 // create a moving planet
                 planet = new P.Ball({radius: 10, color: '#0000ff', mass: m, charge: 0});
                 planet.position = new P.Vector(200,50);
-                planet.velocity = new P.Vector(70,-40);
+                planet.velocity = new P.Vector(10,-10);
                 planet.draw(context);
                 // make the planet orbit the sun
                 P.Core.init();
