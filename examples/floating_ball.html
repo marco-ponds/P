@@ -66,11 +66,11 @@
                 ball.velocity = new P.Vector(evt.clientX - ball.position.x, evt.clientY - ball.position.y);
                 initAnim();
             }
-            function initAnim(){
+            function initAnim() {
                 P.Core.init();
                 animFrame();
             }
-            function animFrame(){
+            function animFrame() {
                 animId = requestAnimationFrame(animFrame,canvas);
                 onTimer();
             }

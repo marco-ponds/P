@@ -33,7 +33,7 @@ export default class Forces {
     static add(forces) {
         let sum = new Vector(0, 0);
 
-        for (let i=0; i<forces.length; i++) {
+        for (let i = 0; i < forces.length; i++) {
             sum.incrementBy(forces[i]);
         }
 

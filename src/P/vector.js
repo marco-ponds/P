@@ -8,6 +8,18 @@ class Vector {
          return Math.acos(v1.dotProduct(v2) / (v1.length()*v2.length()));
     }
 
+    static vector({ mag, angle, clockwise = true}){
+        const vec = new Vector(0,0);
+        vec.x = mag * Math.cos(angle);
+        vec.y = mag * Math.sin(angle);
+
+        if (!clockwise){
+          vec.y *= -1;
+        }
+
+        return vec;
+    }
+
     constructor(x, y) {
         this.x = x;
         this.y = y;
@@ -86,6 +98,21 @@ class Vector {
     dotProduct(vec) {
         // also called scalar product
         return (this.x * vec.x) + (this.y * vec.y);
+    }
+
+    perp(coeff, anticlockwise = true){
+        const length = this.length();
+        let vec = new Vector(this.y, -this.x);
+        if (length > 0) {
+            if (anticlockwise){ // anticlockwise with respect to canvas coordinate system
+                vec.scale(coeff/length);
+            } else{
+                vec.scale(-coeff/length);
+            }
+        } else{
+            vec = new Vector(0,0);
+        }
+        return vec;
     }
 }
 
