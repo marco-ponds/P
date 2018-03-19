@@ -40,7 +40,7 @@
             window.onload = init;
             function init() {
                 // create a ball
-                ball = new P.Ball({radius: 40, color: '#0000ff', mass: 1, charge: 0, gradient: false});
+                ball = new P.Ball({radius: 10, color: '#0000ff', mass: 1, charge: 0, gradient: false});
                 ball.position = new P.Vector(50,50);
                 ball.velocity = new P.Vector(40,-20);
                 //ball.velo2D = new Vector2D(20,-60);
@@ -52,6 +52,8 @@
                 addEventListener('mousedown',onDown,false);
                 addEventListener('mouseup',onUp,false);
                 // initialize time and animate
+                P.Core.init();
+                P.CONSTANTS.G = g;
                 initAnim();
             };
 
@@ -67,7 +69,6 @@
                 initAnim();
             }
             function initAnim() {
-                P.Core.init();
                 animFrame();
             }
             function animFrame() {
@@ -109,7 +110,7 @@
                 }else{ // object completely in water
                   ratio = 1;
                 }
-                var upthrust = new P.Vector(0,-rho*V*ratio*g);
+                var upthrust = P.Forces.upthrust(rho, V*ratio);//new P.Vector(0,-rho*V*ratio*g);
                 var drag = ball.velocity.clone().scale(-ratio * k * ball.velocity.length());
                 force = P.Forces.add([gravity, upthrust, drag]);
                 //force = Forces.add([gravity, upthrust]);
