@@ -45,7 +45,9 @@ export default class Forces {
 
     static drag(k, velocity) {
         let force;
-        
+
+        //const k = 1/2 * rho * Area of object * Drag coeff;
+
         const magnitude = velocity.length();
 
         if (magnitude > 0) {
