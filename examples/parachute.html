@@ -39,7 +39,7 @@
         var context_bg = canvas_bg.getContext('2d');
 
         var ball;
-        var mass = 4;       // mass of ball
+        var mass = 1;       // mass of ball
         var g = 10;         // acceleration due to gravity
         var ck = 0.2;       // coeff of kinetic friction
         var cs = 0.25;      // coeff of static friction
@@ -52,7 +52,10 @@
         var coeff;
 
         var rhoP = 1.15; // balloon density
-        var rho = 1.2 // air density
+        var rho = 0.8; // air density
+
+        var k = P.CONSTANTS.AIR_DRAG;
+        var factor = 3;
 
         window.onload = init;
 
@@ -63,6 +66,8 @@
             ball.velocity = new P.Vector(0,0);
             ball.draw(context);
             // make the ball move
+
+            window.addEventListener('mousedown', openParachute, false);
             P.Core.init();
             animFrame();
         };
@@ -81,11 +86,17 @@
         }
 
         function calcForce() {
-             var gravity = P.Forces.constantGravity(ball.mass,g);
-             var V = ball.mass/rhoP; // volume of air displaced
-             var upthrust = P.Forces.upthrust(rho, V);
-             var linearDrag = P.Forces.drag(ball);
-             ball.force = P.Forces.add([gravity, upthrust, linearDrag]);
+            var gravity = P.Forces.constantGravity(ball.mass);
+            var V = 1;//ball.mass/rhoP; // volume of air displaced
+            var upthrust = P.Forces.upthrust(rho, V);
+            var linearDrag = P.Forces.drag(k, ball);
+            ball.force = P.Forces.add([gravity, upthrust, linearDrag]);
+        }
+
+        function openParachute() {
+            k *= factor * factor;
+            ball.radius *= factor;
+            window.removeEventListener('mousedown', openParachute, false);
         }
 
         function update() {
