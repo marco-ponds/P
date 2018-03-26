@@ -20,6 +20,13 @@ class Vector {
         return vec;
     }
 
+    static components(vector) {
+        return {
+            x: new Vector(vector.x, 0),
+            y: new Vector(0, vector.y)
+        }
+    }
+
     constructor(x, y) {
         this.x = x;
         this.y = y;
@@ -104,10 +111,10 @@ class Vector {
         const length = this.length();
         let vec = new Vector(this.y, -this.x);
         if (length > 0) {
-            if (anticlockwise){ // anticlockwise with respect to canvas coordinate system
-                vec.scale(coeff/length);
+            if (anticlockwise) { // anticlockwise with respect to canvas coordinate system
+                vec.scale(coeff / length);
             } else{
-                vec.scale(-coeff/length);
+                vec.scale(-coeff / length);
             }
         } else{
             vec = new Vector(0,0);

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8" />
+        <title>Simple Animation</title>
+
+        <style>
+            canvas {
+                position: absolute;
+            }
+
+            #canvas_bg {
+                z-index: 1;
+            }
+
+            #canvas {
+                border: 1px solid black;
+                z-index: 2;
+            }
+
+            #canvas_fg {
+                z-index: 3;
+            }
+
+        </style>
+    </head>
+
+    <body>
+        <canvas id='canvas_bg' height="600" width="800"></canvas>
+        <canvas id='canvas' height="600" width="800"></canvas>
+        <canvas id='canvas_fg' height="600" width="800"></canvas>
+        <!-- Scripts -->
+        <script src="../dist/P.js"></script>
+        <script>
+        var canvas = document.getElementById('canvas');
+        var context = canvas.getContext('2d');
+        var canvas_bg = document.getElementById('canvas_bg');
+        var context_bg = canvas_bg.getContext('2d');
+
+        var plane;
+        var m = 1;
+        var g = 5;
+        var kDrag = 0.01;
+        var kLift = 0.5;
+        var magThrust = 5;
+        var groundLevel = 550;
+        var t0,dt;
+
+        window.onload = init;
+
+        function init() {
+          	makeBackground();
+          	makePlane();
+          	P.Core.init();
+          	animFrame();
+        };
+
+        function makeBackground(){
+            var horizon = 500;
+            // the runway
+            context_bg.fillStyle = '#999999';
+            context_bg.fillRect(0,horizon,canvas_bg.width,canvas_bg.height-horizon);
+            context_bg.strokeStyle = '#ffffff';
+            context_bg.beginPath();
+            context_bg.moveTo(0,550);
+            context_bg.lineTo(canvas_bg.width,550);
+            context_bg.closePath();
+            context_bg.stroke();
+            // the sky
+            gradient = context_bg.createLinearGradient(0,0,0,horizon);
+            gradient.addColorStop(0,'#ffffff');
+            gradient.addColorStop(1,'#0066ff');
+            context_bg.fillStyle = gradient;
+            context_bg.fillRect(0,0,canvas_bg.width,horizon);
+        }
+        function makePlane(){
+          	plane = new P.Ball({radius: 5, color:'#333399', mass: m });
+          	plane.position = new P.Vector(50,groundLevel-plane.radius);
+          	plane.velocity = new P.Vector(10,0);
+          	plane.draw(context);
+        }
+        function animFrame(){
+          	animId = requestAnimationFrame(animFrame,canvas);
+          	onTimer();
+        }
+        function onTimer(){
+          	P.Core.update();
+          	move();
+        }
+        function move(){
+          	calcForce();
+          	plane.update(P.Core.time.dt);
+        }
+
+        function calcForce(){
+            var gravity = P.Forces.constantGravity(plane.mass);
+            var velX = P.Vector.components(plane.velocity).x;
+            var drag = P.Forces.drag(kDrag, velX);
+            var lift = P.Forces.lift(kLift, velX);
+            var thrust = new P.Vector(magThrust,0);
+            var normal;
+            if (plane.position.y >= groundLevel - plane.radius){
+                normal = gravity.clone().scale(-1);
+            }else{
+                normal = new P.Vector(0,0);
+            }
+
+            plane.force = P.Forces.add([gravity, drag, lift, thrust, normal]);
+        }
+
+
+
+
+        </script>
+    </body>
+
+</html>

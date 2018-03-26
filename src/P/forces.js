@@ -11,7 +11,7 @@ export default class Forces {
         return new Vector(0, 0);
     }
 
-    static constantGravity(mass, g) {
+    static constantGravity(mass) {
         return new Vector(0, mass * G);
     }
 
@@ -29,13 +29,13 @@ export default class Forces {
         };
     }
 
-    static linearDrag(constant, object) {
+    static linearDrag(constant, velocity) {
         const k = 6 * Math.PI * constant * object.radius;
         let force,
-            velMag = object.velocity.length();
+            velMag = velocity.length();
 
         if (velMag > 0) {
-            force = object.velocity.clone().scale(-k);
+            force = velocity.clone().scale(-k);
         }else {
             force = new Vector(0,0);
         }
@@ -43,16 +43,30 @@ export default class Forces {
         return force;
     }
 
-    static drag(constant, object) {
+    static drag(constant, velocity) {
         let force;
 
         //const k = 1/2 * rho * Area of object * Drag coeff;
-        const magnitude = object.velocity.length();
+        const magnitude = velocity.length();
 
         if (magnitude > 0) {
-            force = object.velocity.clone().scale(- constant * magnitude);
+            force = velocity.clone().scale(- constant * magnitude);
         } else {
             force = new Vector(0, 0);
+        }
+
+        return force;
+    }
+
+    static lift(constant, velocity) {
+        let force;
+
+        const magnitude = velocity.length();
+
+        if (magnitude > 0) {
+          force = velocity.perp(constant * magnitude);
+        } else {
+          force = new Vector(0, 0);
         }
 
         return force;
