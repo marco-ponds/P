@@ -50,7 +50,9 @@ class Particle {
     }
 
     updateAcceleration(dt) {
-        this.acceleration = this.force.clone().scale(1 / this.mass);
+        if (this.force) {
+            this.acceleration = this.force.clone().scale(1 / this.mass);
+        }
 
         return this;
     }

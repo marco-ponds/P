@@ -72,6 +72,18 @@ export default class Forces {
         return force;
     }
 
+    static wind(constant, velocity, wind, turbolence) {
+
+        let _wind = wind;
+        if (turbolence) {
+            _wind = new Vector(20 + (Math.random()-0.5)*1000,(Math.random()-0.5)*1000);
+        }
+
+        const relwind = _wind.subtract(velocity);
+
+        return Forces.drag(-constant, relwind);
+    }
+
     static add(forces) {
         let sum = new Vector(0, 0);
 

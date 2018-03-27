@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8" />
+        <title>Simple Animation</title>
+
+        <style>
+            canvas {
+                position: absolute;
+            }
+
+            #canvas_bg {
+                z-index: 1;
+            }
+
+            #canvas {
+                border: 1px solid black;
+                z-index: 2;
+            }
+
+            #canvas_fg {
+                z-index: 3;
+            }
+
+        </style>
+    </head>
+
+    <body>
+        <canvas id='canvas_bg' height="600" width="800"></canvas>
+        <canvas id='canvas' height="600" width="800"></canvas>
+        <canvas id='canvas_fg' height="600" width="800"></canvas>
+        <!-- Scripts -->
+        <script src="../dist/P.js"></script>
+        <script>
+        var canvas = document.getElementById('canvas');
+        var context = canvas.getContext('2d');
+
+        var bubbles; var t0;
+        var dt;
+        var force;
+        var acc;
+        var numBubbles = 200;
+        var g = 10;
+        var rho = 1;
+        var rhoP = 0.99;
+        var kfac = 0.01;
+        var windvel = new P.Vector(100,0);
+
+        window.onload = init;
+
+        function init() {
+             bubbles = new Array();
+             var color = 'rgba(0,200,255,0.5)';
+             for (var i=0; i<numBubbles; i++){
+                  var radius = Math.random()*20+5;
+                  var V = 4*Math.PI*Math.pow(radius,3)/3;
+                  var mass = rho*V;
+                  var bubble = new P.Ball({radius,color,mass,charge: 0});
+                  bubble.position = new P.Vector(Math.random()*canvas.width,Math.random()*canvas.height);
+                  bubble.velocity = new P.Vector((Math.random()-0.5)*20,0);
+                  bubble.draw(context);
+                  bubbles.push(bubble);
+             }
+             P.Core.init();
+            animFrame();
+        };
+
+        function animFrame(){
+             requestAnimationFrame(animFrame,canvas);
+             onTimer();
+        }
+        function onTimer(){
+             P.Core.update();
+             move();
+        }
+        function move(){
+             context.clearRect(0, 0, canvas.width, canvas.height);
+             for (var i=0; i<numBubbles; i++){
+                  var bubble = bubbles[i];
+                  bubble.update(P.Core.time.dt);
+                  bubble.draw(context);
+                  calcForce(bubble);
+             }
+        }
+
+        function calcForce(particle){
+             var V = particle.mass/rhoP;
+             var k = Math.PI*particle.radius*particle.radius*kfac;
+             var gravity = P.Forces.constantGravity(particle.mass);
+             var upthrust = P.Forces.upthrust(rho,V);
+             var wind = P.Forces.wind(k,
+                 particle.velocity,
+                windvel, false);
+             particle.force = P.Forces.add([wind]);
+        }
+
+
+
+
+        </script>
+    </body>
+
+</html>
