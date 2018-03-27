@@ -91,7 +91,7 @@
              var upthrust = P.Forces.upthrust(rho,V);
              var wind = P.Forces.wind(k,
                  particle.velocity,
-                windvel, false);
+                windvel, true);
              particle.force = P.Forces.add([wind]);
         }
 

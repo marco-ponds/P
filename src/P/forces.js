@@ -84,6 +84,11 @@ export default class Forces {
         return Forces.drag(-constant, relwind);
     }
 
+    static spring(constant, vector) {
+        // restoring force of a spring
+        return vector.clone().scale(-constant);
+    }
+
     static add(forces) {
         let sum = new Vector(0, 0);
 
