@@ -98,6 +98,15 @@ class Vector {
         return this;
     }
 
+    unit() {
+		const length = this.length();
+		if (length > 0) {
+			return new Vector(this.x / length, this.y / length);
+		}else{
+			return new Vector(0,0);
+		}
+	}
+
     addScaled(vec, scale) {
         return this.add(vec.clone().scale(scale));
     }
