@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8" />
+        <title>Simple Animation</title>
+
+        <style>
+            canvas {
+                position: absolute;
+            }
+
+            #canvas_bg {
+                z-index: 1;
+            }
+
+            #canvas {
+                border: 1px solid black;
+                z-index: 2;
+            }
+
+            #canvas_fg {
+                z-index: 3;
+            }
+
+        </style>
+    </head>
+
+    <body>
+        <canvas id='canvas_bg' height="600" width="800"></canvas>
+        <canvas id='canvas' height="600" width="500"></canvas>
+        <!-- Scripts -->
+        <script src="../dist/P.js"></script>
+        <script>
+        var canvas = document.getElementById('canvas');
+        var context = canvas.getContext('2d');
+        var numballs = 20;
+
+        var balls = [];
+        var center = new P.Vector(0.5 * canvas.width, 0.5 * canvas.height);
+
+        window.onload = init;
+
+        function onMouse(evt) {
+            var rect = canvas.getBoundingClientRect();
+            const x = evt.clientX - rect.left,
+                y = evt.clientY - rect.top;
+
+            console.log('mousemove, ', x, y);
+            center.set(x, y);
+        }
+
+        function init() {
+            for (var i=0; i<numballs; i++) {
+                const ball = new P.Ball({
+                    radius: Math.floor(Math.random() * 20),
+                    mass: 25,
+                    color:  "#000000".replace(/0/g,function(){return (~~(Math.random()*16)).toString(16);})
+                });
+                balls.push(ball);
+                ball.position = new P.Vector(Math.random() * canvas.width, Math.random() * canvas.height);
+                ball.velocity = new P.Vector(Math.random() * 3, Math.random() * 3);
+            }
+            P.Core.init();
+            canvas.addEventListener('mousemove', onMouse, false);
+            animFrame();
+        };
+
+        function animFrame(){
+            requestAnimationFrame(animFrame,canvas);
+            onTimer();
+        }
+        function onTimer(){
+            P.Core.update();
+            update();
+        }
+        function update(){
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            for (var i=0; i<balls.length; i++) {
+                const ball = balls[i];
+                calcForce(ball);
+                ball.update(P.Core.time.dt);
+                ball.draw(context);
+            }
+        }
+
+        function calcForce(ball) {
+            const distance = ball.position.subtract(center);
+            const spring = new P.Forces.spring(5, distance);
+            const gravity = new P.Forces.constantGravity(ball.mass);
+            const damping = new P.Forces.damping(5, ball.velocity);
+            const wind = new P.Forces.wind(0.01, ball.velocity, {}, true);
+
+            ball.force = P.Forces.add([spring, damping, wind, gravity]);
+        }
+        </script>
+    </body>
+
+</html>

@@ -1,55 +1,63 @@
-export default class Graph {
+function Graph(context,xmin,xmax,ymin,ymax,x0,y0,xwidth,ywidth) {
+// VARIABLE DECLARATIONS
+	// canvas context on which to draw graph instance
+	var ctx = context;
+	// location of origin (in pixels) in parent document
+	var x_orig;
+	var y_orig;
+	// overall width and height of graph in pixels
+	var x_width;
+	var y_width;
+	// min and max of x and y relative to origin (in pixels)
+	var x_min_rel;
+	var x_max_rel;
+	var y_min_rel;
+	var y_max_rel;
+	// obvious
+	var x_tick_major;
+	var x_tick_minor;
+	var y_tick_major;
+	var y_tick_minor;
+	// scaling used in displaying values on the axes
+	var x_displ_scal;
+	var y_displ_scal;
+	// width and height of textbox used for displaying values on the axes
+	// this should not have to be tampered with (I hope)
+	var tw=15;
+	var th=20;
+	// declarations for quantities to be used later
+	var x_min;
+	var x_max;
+	var y_min;
+	var y_max;
+	var xx;
+	var yy;
+	var x_displ;
+	var y_displ;
+	var txpos;
+	var typos;
 
-    constructor(context, xmin, xmax, ymin, ymax, x0, y0, xwidth, ywidth) {
-        this.ctx = context;
-
-    	this.x_tick_major;
-    	this.x_tick_minor;
-    	this.y_tick_major;
-    	this.y_tick_minor;
-    	// scaling used in displaying values on the axes
-    	this.x_displ_scal;
-    	this.y_displ_scal;
-    	// width and height of textbox used for displaying values on the axes
-    	// this should not have to be tampered with (I hope)
-    	this.tw=15;
-    	this.th=20;
-    	// declarations for quantities to be used later
-    	this.x_min;
-    	this.x_max;
-    	this.y_min;
-    	this.y_max;
-    	this.xx;
-    	this.yy;
-    	this.x_displ;
-    	this.y_displ;
-    	this.txpos;
-    	this.typos;
-
-    // PARAMETER ASSIGNMENTS
-    	// assign parameter values based on specified arguments
-    	this.x_orig = x0;
-    	this.y_orig = y0;
-    	this.x_width = xwidth;
-    	this.y_width = ywidth;
-    	//
-    	this.x_displ_scal = (xmax - xmin) / xwidth;
-    	this.y_displ_scal = (ymax - ymin) / ywidth;
-    	//
-    	this.x_min_rel = xmin / this.x_displ_scal;
-    	this.x_max_rel = xmax / this.x_displ_scal;
-    	this.y_min_rel = ymin / this.y_displ_scal;
-    	this.y_max_rel = ymax / this.y_displ_scal;
-
-    	this.x_min = this.x_min_rel + this.x_orig;
-    	this.x_max = this.x_max_rel + this.x_orig;
-    	this.y_min = this.y_orig - this.y_min_rel;
-    	this.y_max = this.y_orig - this.y_max_rel;
-    	this.txpos = this.x_orig - this.tw;
-    	this.typos = this.y_orig;
-    }
-
-}
+// PARAMETER ASSIGNMENTS
+	// assign parameter values based on specified arguments
+	x_orig=x0;
+	y_orig=y0;
+	x_width=xwidth;
+	y_width=ywidth;
+	//
+	x_displ_scal=(xmax-xmin)/xwidth;
+	y_displ_scal=(ymax-ymin)/ywidth;
+	//
+	x_min_rel=xmin/x_displ_scal;
+	x_max_rel=xmax/x_displ_scal;
+	y_min_rel=ymin/y_displ_scal;
+	y_max_rel=ymax/y_displ_scal;
+	// convert to absolute coordinates
+	x_min=x_min_rel + x_orig;
+	x_max=x_max_rel + x_orig;
+	y_min=y_orig - y_min_rel;
+	y_max=y_orig - y_max_rel;
+	txpos=x_orig - tw;
+	typos=y_orig;
 
 // METHODS
 	// DRAW GRID: draw major, minor lines and display values
@@ -163,3 +171,5 @@ export default class Graph {
 	};
 
 }
+
+export default Graph;

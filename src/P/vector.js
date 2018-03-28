@@ -33,8 +33,8 @@ class Vector {
     }
 
     set(x, y) {
-        this.x = x || this.x;
-        this.y = y || this.y;
+        this.x = !isNaN(x) && x;
+        this.y = !isNaN(y) && y;
 
         return this;
     }

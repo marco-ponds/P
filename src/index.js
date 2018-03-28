@@ -4,6 +4,7 @@ import Ball from './P/ball';
 import Forces from './P/forces';
 import * as CONSTANTS from './P/constants';
 import Core from './P/core';
+import Graph from './P/graph';
 
 export {
     Vector,

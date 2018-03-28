@@ -89,6 +89,16 @@ export default class Forces {
         return vector.clone().scale(-constant);
     }
 
+    static damping(constant, velocity) {
+        const magnitude = velocity.length();
+
+        if (magnitude > 0) {
+            return velocity.clone().scale(-constant);
+        } else {
+            return new Vector(0, 0);
+        }
+    }
+
     static add(forces) {
         let sum = new Vector(0, 0);
 

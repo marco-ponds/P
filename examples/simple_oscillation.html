@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8" />
+        <title>Simple Animation</title>
+
+        <style>
+            canvas {
+                position: absolute;
+            }
+
+            #canvas_bg {
+                z-index: 1;
+            }
+
+            #canvas {
+                border: 1px solid black;
+                z-index: 2;
+            }
+
+            #canvas_fg {
+                z-index: 3;
+            }
+
+        </style>
+    </head>
+
+    <body>
+        <canvas id='canvas_bg' height="600" width="800"></canvas>
+        <canvas id='canvas' height="600" width="800"></canvas>
+        <canvas id='canvas_fg' height="600" width="800"></canvas>
+        <!-- Scripts -->
+        <script src="../dist/P.js"></script>
+        <script>
+        var canvas = document.getElementById('canvas');
+        var context = canvas.getContext('2d');
+
+        var ball;
+        var center = new P.Vector(0.5 * canvas.width, 0.5 * canvas.height);
+
+        window.onload = init;
+
+        function init() {
+            ball = new P.Ball({radius: 20, mass: 1});
+            ball.position = new P.Vector(100, 100);
+            P.Core.init();
+            animFrame();
+        };
+
+        function animFrame(){
+            requestAnimationFrame(animFrame,canvas);
+            onTimer();
+        }
+        function onTimer(){
+            P.Core.update();
+            move();
+            calcForce();
+        }
+        function move(){
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            ball.update(P.Core.time.dt);
+            ball.draw(context);
+        }
+
+        function calcForce(particle){
+            const distance = ball.position.subtract(center);
+            const spring = new P.Forces.spring(2, distance);
+
+            ball.force = P.Forces.add([spring]);
+        }
+
+
+
+
+        </script>
+    </body>
+
+</html>
