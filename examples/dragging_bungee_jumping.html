@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8" />
+        <title>Simple Animation</title>
+
+        <style>
+            canvas {
+                position: absolute;
+            }
+
+            #canvas_bg {
+                z-index: 1;
+            }
+
+            #canvas {
+                border: 1px solid black;
+                z-index: 2;
+            }
+
+            #canvas_fg {
+                z-index: 3;
+            }
+
+        </style>
+    </head>
+
+    <body>
+        <canvas id='canvas_bg' height="600" width="800"></canvas>
+        <canvas id='canvas' height="600" width="500"></canvas>
+        <!-- Scripts -->
+        <script src="../dist/P.js"></script>
+        <script>
+        var canvas = document.getElementById('canvas');
+        var context = canvas.getContext('2d');
+
+        var jumper;
+        var fixedPoint;
+        var board;
+        var displ = new P.Vector(0,0);
+        var center = new P.Vector(0.5*canvas.width,50);
+        var mass = 90;
+        var g = 20;
+        var kDamping = 0.02;
+        var kSpring = 25;
+        var cordLength = 300;
+        var t0, dt;
+        var acc, force;
+        var animId;
+        var isDragging = false;
+        window.onload = init;
+
+        function onDrag(evt) {
+            var mousePos = new P.Vector(evt.clientX,evt.clientY);
+        	var dist = P.Vector.distance(jumper.position, mousePos);
+        	if (dist < jumper.radius){
+        		jumper.velocity = new P.Vector(0,0);
+        		jumper.position = mousePos;
+        		isDragging = true;
+        	}
+        }
+
+        function onDrop() {
+            isDragging = false;
+        	canvas.removeEventListener('mousemove',onDrag,false);
+        	canvas.removeEventListener('mouseup',onDrop,false);
+        }
+
+        function init() {
+            // create a bungee jumper
+            jumper = new P.Ball({mass, radius: 20});
+            jumper.velocity = new P.Vector(15, -20);
+            jumper.position = center;
+            jumper.draw(context);
+            fixedPoint = new P.Ball({radius: 2});
+            fixedPoint.position = center;
+            fixedPoint.draw(context);
+
+            canvas.addEventListener('mousedown', function () {
+                console.log('mouseodnw');
+            	canvas.addEventListener('mousemove', onDrag,false);
+            	canvas.addEventListener('mouseup', onDrop,false);
+            }, false);
+            // make the ball move
+            P.Core.init();
+            animFrame();
+        }
+
+        function animFrame(){
+            animId = requestAnimationFrame(animFrame,canvas);
+            onTimer();
+        }
+        function onTimer(){
+            P.Core.update();
+            move();
+        }
+        function move(){
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            drawSpring(jumper);
+            jumper.update(P.Core.time.dt);
+            jumper.draw(context);
+            if (!isDragging) {
+                calcForce();
+            }
+        }
+        function drawSpring(){
+            fixedPoint.draw(context);
+            context.save();
+            if (displ.length() > cordLength){
+                context.lineStyle = '#999999';
+                context.lineWidth = 2;
+            } else {
+                context.lineStyle = '#cccccc';
+                context.lineWidth = 1;
+            }
+            context.moveTo(center.x,center.y);
+            context.lineTo(jumper.position.x, jumper.position.y);
+            context.stroke();
+            context.restore();
+        }
+
+        function calcForce(){
+            distance = jumper.position.subtract(center);
+            var gravity = P.Forces.constantGravity(mass);
+            var damping = P.Forces.drag(kDamping,jumper.velocity);
+            var extension = distance.subtract(distance.unit().clone().scale(cordLength));
+            var restoring;
+            if (distance.length() > cordLength) {
+                restoring = P.Forces.spring(kSpring, extension);
+            }else{
+                restoring = new P.Vector(0,0);
+            }
+            jumper.force = P.Forces.add([gravity, damping, restoring]);
+        }
+        </script>
+    </body>
+
+</html>

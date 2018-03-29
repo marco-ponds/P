@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8" />
+        <title>Simple Animation</title>
+
+        <style>
+            canvas {
+                position: absolute;
+            }
+
+            #canvas_bg {
+                z-index: 1;
+            }
+
+            #canvas {
+                border: 1px solid black;
+                z-index: 2;
+            }
+
+            #canvas_fg {
+                z-index: 3;
+            }
+
+        </style>
+    </head>
+
+    <body>
+        <canvas id='canvas_bg' height="600" width="800"></canvas>
+        <canvas id='canvas' height="600" width="500"></canvas>
+        <!-- Scripts -->
+        <script src="../dist/P.js"></script>
+        <script>
+        var canvas = document.getElementById('canvas');
+        var context = canvas.getContext('2d');
+
+        var balls;
+        var support;
+        var center = new P.Vector(0.5*canvas.width,50);
+        var g = 20;
+        var kDamping = 0.5;
+        var kSpring = 1;
+        var springLength = 50;
+        var numBalls = 6;
+        var t0, t, dt;
+        var acc, force;
+        var animId;
+
+        window.onload = init;
+
+        function init() {
+            // create a support
+            support = new P.Ball({radius: 2});
+            support.position = center;
+            support.draw(context);
+            // create a bunch of balls
+            balls = new Array();
+            for (var i=0; i<numBalls; i++){
+                var ball = new P.Ball({radius: 15, mass: 1});
+                ball.position = new P.Vector(0.5*canvas.width,100+60*i);
+                ball.position = new P.Vector(0.5*canvas.width+60*i,100+60*i);
+                ball.draw(context);
+                balls.push(ball);
+            }
+            // make the balls move
+            P.Core.init();
+            animFrame();
+        };
+
+        function animFrame(){
+            //animId = setTimeout(animFrame,1000/60);
+            animId = requestAnimationFrame(animFrame,canvas);
+            onTimer();
+        }
+
+        function onTimer(){
+            P.Core.update();
+            move();
+        }
+        function move(){
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            drawSpring();
+            moveSupport();
+            for (var i=0; i<numBalls; i++){
+                var ball = balls[i];
+                moveObject(ball);
+                calcForce(ball,i);
+            }
+        }
+        function drawSpring(){
+            support.draw(context);
+            context.save();
+            context.lineStyle = '#999999';
+            context.lineWidth = 2;
+            context.moveTo(center.x,center.y);
+
+            for (var i=0; i<numBalls; i++){
+                var X = balls[i].position.x;
+                var Y = balls[i].position.y;
+                context.lineTo(X,Y);
+            }
+            context.stroke();
+            context.restore();
+        }
+
+        function moveSupport(){
+            support.position.x = 100*Math.sin(1.0*P.Core.time.elapsed)+0.5*canvas.width;
+            center = support.position;
+        }
+
+        function moveObject(obj){
+            obj.update(P.Core.time.dt);
+            obj.draw(context);
+        }
+        function calcForce(obj,num){
+            var centerPrev;
+            var centerNext;
+            if (num > 0){
+                centerPrev = balls[num - 1].position;
+            } else {
+                centerPrev = center;
+            }
+            if (num < balls.length-1){
+                centerNext = balls[num+1].position;
+            }else{
+                centerNext = obj.position;
+            }
+            var gravity = P.Forces.constantGravity(obj.mass);
+            var damping = P.Forces.damping(kDamping, obj.velocity);
+            var displPrev = obj.position.subtract(centerPrev);
+            var displNext = obj.position.subtract(centerNext);
+            var extensionPrev = displPrev.subtract(displPrev.unit().clone().scale(springLength));
+            var extensionNext = displNext.subtract(displNext.unit().clone().scale(springLength));
+            var restoringPrev = P.Forces.spring(kSpring, extensionPrev);
+            var restoringNext = P.Forces.spring(kSpring, extensionNext);
+
+            obj.force = P.Forces.add([gravity, damping, restoringPrev, restoringNext]);
+        }
+
+        </script>
+    </body>
+
+</html>
