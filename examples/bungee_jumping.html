@@ -38,13 +38,14 @@
 
         var jumper;
         var fixedPoint;
+        var board;
         var displ = new P.Vector(0,0);
         var center = new P.Vector(0.5*canvas.width,50);
         var mass = 90;
         var g = 20;
         var kDamping = 0.02;
         var kSpring = 25;
-        var cordLength = 200;
+        var cordLength = 300;
         var t0, dt;
         var acc, force;
         var animId;
@@ -53,10 +54,9 @@
         function init() {
             // create a bungee jumper
             jumper = new P.Ball({mass, radius: 20});
-            jumper.velocity = new P.Vector(1, 0);
+            jumper.velocity = new P.Vector(15, -20);
             jumper.position = center;
             jumper.draw(context);
-            // create a fixedPoint
             fixedPoint = new P.Ball({radius: 2});
             fixedPoint.position = center;
             fixedPoint.draw(context);
@@ -81,33 +81,33 @@
             jumper.draw(context);
         }
         function drawSpring(){
-             fixedPoint.draw(context);
-             context.save();
-             if (displ.length() > cordLength){
-                  context.lineStyle = '#999999';
-                  context.lineWidth = 2;
-             }else{
-                  context.lineStyle = '#cccccc';
-                  context.lineWidth = 1;
-             }
-             context.moveTo(center.x,center.y);
-             context.lineTo(jumper.position.x, jumper.position.y);
-             context.stroke();
-             context.restore();
+            fixedPoint.draw(context);
+            context.save();
+            if (displ.length() > cordLength){
+                context.lineStyle = '#999999';
+                context.lineWidth = 2;
+            } else {
+                context.lineStyle = '#cccccc';
+                context.lineWidth = 1;
+            }
+            context.moveTo(center.x,center.y);
+            context.lineTo(jumper.position.x, jumper.position.y);
+            context.stroke();
+            context.restore();
         }
 
         function calcForce(){
-             displ = jumper.position.subtract(center);
-             var gravity = P.Forces.constantGravity(mass);
-             var damping = P.Forces.drag(kDamping,jumper.velocity);
-             var extension = displ.subtract(displ.unit().clone().scale(cordLength));
-             var restoring;
-             if (displ.length() > cordLength) {
-                  restoring = P.Forces.spring(kSpring,extension);
-             }else{
-                  restoring = new P.Vector(0,0);
-             }
-             jumper.force = P.Forces.add([gravity, damping, restoring]);
+            distance = jumper.position.subtract(center);
+            var gravity = P.Forces.constantGravity(mass);
+            var damping = P.Forces.drag(kDamping,jumper.velocity);
+            var extension = distance.subtract(distance.unit().clone().scale(cordLength));
+            var restoring;
+            if (distance.length() > cordLength) {
+                restoring = P.Forces.spring(kSpring, extension);
+            }else{
+                restoring = new P.Vector(0,0);
+            }
+            jumper.force = P.Forces.add([gravity, damping, restoring]);
         }
         </script>
     </body>

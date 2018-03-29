@@ -13,12 +13,13 @@ class Ball extends Particle {
 
     draw(context) {
         const {x, y} = this.position;
-        
         context.strokeStyle = this.color;
+        context.fillStyle = '#ffffff';
         context.beginPath();
         context.arc(x, y, this.radius, 0, 2*Math.PI, true);
         context.closePath();
         context.stroke();
+        context.fill();
     }
 }
 
