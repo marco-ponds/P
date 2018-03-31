@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8" />
+        <title>Simple Animation</title>
+
+        <style>
+            canvas {
+                position: absolute;
+            }
+
+            #canvas_bg {
+                z-index: 1;
+            }
+
+            #canvas {
+                border: 1px solid black;
+                z-index: 2;
+            }
+
+            #canvas_fg {
+                z-index: 3;
+            }
+
+        </style>
+    </head>
+
+    <body>
+        <canvas id='canvas_bg' height="600" width="800"></canvas>
+        <canvas id='canvas' height="600" width="500"></canvas>
+        <!-- Scripts -->
+        <script src="../dist/P.js"></script>
+        <script>
+        var canvas = document.getElementById('canvas');
+        var context = canvas.getContext('2d');
+        var r = 50;       // outer radius
+        var w = 1;        // angular velocity in radians per second
+        var dt = 30/1000; // timestep = 1/FPS
+        var fac = 1;      // slipping/sliding factor
+
+        var wheel = new P.Wheel({ innerRadius: r-10, outerRadius: r, numSpokes: 12 });
+        wheel.position = new P.Vector(100, 200);
+        wheel.draw(context);
+
+        var v = fac * r * w;     // v = r w
+        var angle = 0;
+        setInterval(onTimer, 1/dt);
+
+        function onTimer(evt){
+             wheel.position.x += v*dt;
+             angle += w*dt;
+             context.clearRect(0, 0, canvas.width, canvas.height);
+             context.save();
+             context.translate(wheel.position.x, wheel.position.y);
+             context.rotate(angle);
+             context.translate(-wheel.position.x, -wheel.position.y);
+             wheel.draw(context);
+             context.restore();
+        }
+
+        </script>
+    </body>
+
+</html>

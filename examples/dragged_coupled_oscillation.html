@@ -58,7 +58,7 @@
             // create a bunch of balls
             balls = new Array();
             for (var i=0; i<numBalls; i++) {
-                var ball = new P.Ball({radius: 15, mass: 1});
+                var ball = new P.Ball({radius: 10, mass: 1});
                 //ball.position = new P.Vector(0.5*canvas.width,100+60*i);
                 ball.position = new P.Vector(0.5*canvas.width+60*i,100+60*i);
                 ball.color = "#000000".replace(/0/g,function(){return (~~(Math.random()*16)).toString(16);});
@@ -69,6 +69,7 @@
             canvas.addEventListener('mousedown', onMouseDown, false);
             canvas.addEventListener('mousemove', onDrag,false);
             canvas.addEventListener('mouseup', onDrop,false);
+            P.CONSTANTS.G = 15;
             P.Core.init();
             animFrame();
         }

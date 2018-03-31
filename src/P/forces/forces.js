@@ -1,9 +1,9 @@
-import Vector from './vector';
+import { Vector } from '../math';
 import {
     G,
     AIR_DRAG,
     GRAVITATIONAL_CONSTANT
-} from './constants';
+} from '../constants';
 
 export default class Forces {
 

@@ -1,5 +1,4 @@
 import Particle from './particle';
-import Vector from './vector';
 
 export default class Box extends Particle {
 
