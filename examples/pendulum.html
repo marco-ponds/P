@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8" />
+        <title>Simple Animation</title>
+
+        <style>
+            canvas {
+                position: absolute;
+            }
+
+            #canvas_bg {
+                z-index: 1;
+            }
+
+            #canvas {
+                border: 1px solid black;
+                z-index: 2;
+            }
+
+            #canvas_fg {
+                z-index: 3;
+            }
+
+        </style>
+    </head>
+
+    <body>
+        <canvas id='canvas_bg' height="600" width="800"></canvas>
+        <canvas id='canvas' height="600" width="800"></canvas>
+        <!-- Scripts -->
+        <script src="../dist/P.js"></script>
+        <script>
+        var canvas = document.getElementById('canvas');
+        var context = canvas.getContext('2d');
+
+        var bob;
+        var pivot;
+        var displ = new P.Vector(0,0);
+        var center = new P.Vector(0.5*canvas.width,50);
+        var mass = 1;
+        var g = 100;
+        var lengthP = 200;
+        var initAngle = 30;
+        var t0, t, dt;
+        var acc, force;
+        var animId;
+
+        window.onload = init;
+
+        function init() {
+        	// create a pivot
+        	pivot = new P.Ball({radius: 2});
+        	pivot.position = center;
+        	pivot.draw(context);
+        	// create a bob
+        	bob = new P.Ball({radius: 10, mass});
+        	bob.mass = mass;
+        	var relativePos = new P.Vector(lengthP*Math.sin(initAngle*Math.PI/180),lengthP*Math.cos(initAngle*Math.PI/180));
+        	bob.position = pivot.position.add(relativePos);
+        	bob.draw(context);
+        	// make the bob move
+        	P.Core.init();
+        	animFrame();
+        };
+        function animFrame(){
+        	animId = requestAnimationFrame(animFrame,canvas);
+        	onTimer();
+        }
+        function onTimer(){
+            P.Core.update();
+        	move();
+        }
+        function move(){
+        	context.clearRect(0, 0, canvas.width, canvas.height);
+        	drawSpring(bob);
+        	moveObject(bob);
+        	calcForce(bob);
+        }
+        function drawSpring(obj){
+        	pivot.draw(context);
+        	context.save();
+        	context.strokeStyle = '#999999';
+        	context.lineWidth = 2;
+        	context.moveTo(center.x,center.y);
+        	context.lineTo(obj.position.x,obj.position.y);
+        	context.stroke();
+        	context.restore();
+        }
+        function moveObject(obj){
+        	obj.update(P.Core.time.dt);
+        	obj.draw(context);
+        }
+        function calcForce(obj){
+            displ = obj.position.subtract(center);
+        	var gravity = P.Forces.constantGravity(mass);
+        	var tension;
+            if (displ.length() >= lengthP) {
+                // tension is mg cos(theta) + mv^2/r
+        		tension = displ.unit().clone().scale(-(gravity.projection(displ)+mass*bob.velocity.lengthSquared()/lengthP));
+        	}else{
+        		tension = new P.Vector(0,0);
+        	}
+        	obj.force = P.Forces.add([gravity, tension]);
+        }
+
+
+        </script>
+    </body>
+
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8" />
+        <title>Simple Animation</title>
+
+        <style>
+            canvas {
+                position: absolute;
+            }
+
+            #canvas_bg {
+                z-index: 1;
+            }
+
+            #canvas {
+                border: 1px solid black;
+                z-index: 2;
+            }
+
+            #canvas_fg {
+                z-index: 3;
+            }
+
+        </style>
+    </head>
+
+    <body>
+        <canvas id='canvas_bg' height="600" width="800"></canvas>
+        <canvas id='canvas' height="600" width="800"></canvas>
+        <!-- Scripts -->
+        <script src="../dist/P.js"></script>
+        <script>
+        var canvas = document.getElementById('canvas');
+        var context = canvas.getContext('2d');
+        var canvas_bg = document.getElementById('canvas_bg');
+        var context_bg = canvas_bg.getContext('2d');
+
+        var center = new P.Vector(canvas.width/2,canvas.height/2);
+        var car;
+        var mass = 90; // car mass
+        var g = 10;
+        var Cs = 1;
+        var angle = 0;
+        var omega;
+        var t0,dt;
+        var acc, force;
+
+        window.onload = init;
+
+        function init() {
+        	// create a circular track, e.g. a roundabout
+        	context_bg.fillStyle = '#cccccc';
+        	context_bg.beginPath();
+        	context_bg.arc(canvas.width/2, canvas.height/2, 100, 0, 2*Math.PI, true);
+        	context_bg.closePath();
+        	context_bg.fill();
+        	context_bg.fillStyle = '#ffffff';
+        	context_bg.beginPath();
+        	context_bg.arc(canvas.width/2, canvas.height/2, 50, 0, 2*Math.PI, true);
+        	context_bg.closePath();
+        	context_bg.fill();
+        	// create a car
+        	car = new P.Box({height: 20, width: 10, mass});
+        	car.position = new P.Vector(center.x+75,center.y);
+        	car.velocity = new P.Vector(0, -10);
+        	car.angVelo = -car.velocity.length()/(car.position.subtract(center).length());
+        	omega = car.angVelo;
+        	car.draw(context);
+        	// make the car move
+        	P.Core.init();
+        	animFrame();
+        };
+
+        function animFrame(){
+        	animId = requestAnimationFrame(animFrame,canvas);
+        	onTimer();
+        }
+        function onTimer(){
+        	P.Core.update();
+        	move();
+        }
+        function move(){
+            context.clearRect(0, 0, canvas.width, canvas.height);
+        	moveObject(car);
+        	calcForce();
+        }
+
+        function moveObject(obj){
+            obj.update(P.Core.time.dt);
+            //
+
+        	angle += omega*P.Core.time.dt;
+        	rotateObject(obj);
+        }
+        function rotateObject(obj){
+        	context.save();
+        	context.translate(obj.position.x, obj.position.y);
+        	context.rotate(angle);
+        	context.translate(-obj.position.x,-obj.position.y);
+        	obj.draw(context);
+        	context.restore();
+        }
+        function calcForce(){
+        	var dist = car.position.subtract(center);
+        	var velo = car.velocity.length();
+        	var centripetalForce = P.Forces.centripetal(dist, car);//dist.unit().clone().scale(-mass*velo*velo/dist.length());
+        	var radialFriction = P.Forces.maxFriction(Cs, dist, car);//dist.unit().clone().scale(-Cs*mass*g);
+            if(radialFriction.length() > centripetalForce.length()) {
+        		car.force = P.Forces.add([centripetalForce]);
+        	}
+        	else{
+        		car.force = P.Forces.add([radialFriction]);
+        	}
+        }
+
+        </script>
+    </body>
+
+</html>

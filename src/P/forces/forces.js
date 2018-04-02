@@ -99,6 +99,20 @@ export default class Forces {
         }
     }
 
+    static centripetal(distance, obj) {
+        const unit = distance.unit().clone();
+        const mass = obj.mass;
+        const velMagnitude = obj.velocity.length();
+
+        return unit.scale(-mass * velMagnitude * velMagnitude/distance.length());
+    }
+
+    static maxFriction(constant, distance, { mass = 1}) {
+        const unit = distance.unit().clone();
+
+        return unit.scale(-constant * mass * G);
+    }
+
     static add(forces) {
         let sum = new Vector(0, 0);
 

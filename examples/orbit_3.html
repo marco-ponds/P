@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8" />
+        <title>Simple Animation</title>
+
+        <style>
+            canvas {
+                position: absolute;
+            }
+
+            #canvas_bg {
+                z-index: 1;
+            }
+
+            #canvas {
+                border: 1px solid black;
+                z-index: 2;
+            }
+
+            #canvas_fg {
+                z-index: 3;
+            }
+
+        </style>
+    </head>
+
+    <body>
+        <canvas id='canvas_bg' height="600" width="800"></canvas>
+        <canvas id='canvas' height="600" width="800"></canvas>
+        <!-- Scripts -->
+        <script src="../dist/P.js"></script>
+        <script>
+        var canvas = document.getElementById('canvas');
+        var context = canvas.getContext('2d');
+        var canvas_bg = document.getElementById('canvas_bg');
+        var context_bg = canvas_bg.getContext('2d');
+
+        var planet;
+        var sun;
+        var m = 1; // planet's mass
+        var M = 1000000; // sun's mass
+        var G = 1;
+        var t0,dt;
+        var acc, force;
+
+        window.onload = init;
+
+        function init() {
+        	// create a stationary sun
+        	sun = new P.Ball({radius: 70, mass: M});
+        	sun.position = new P.Vector(400,300);
+        	sun.draw(context_bg);
+        	// create a moving planet
+        	planet = new P.Ball({radius: 10, mass: m });
+        	planet.position = new P.Vector(400, 200);
+        	//planet.position = new P.Vector(400,150);
+        	var r = planet.position.subtract(sun.position).length();
+        	var v = Math.sqrt(G*M*m/r);
+        	planet.velocity = new P.Vector(v, 0);
+        	//planet.velocity = new P.Vector(v/Math.sqrt(2),v/Math.sqrt(2));
+        	planet.draw(context);
+        	// make the planet orbit the sun
+        	P.Core.init();
+        	animFrame();
+        };
+
+        function animFrame(){
+        	animId = requestAnimationFrame(animFrame,canvas);
+        	onTimer();
+        }
+        function onTimer(){
+        	P.Core.update();
+        	move();
+        }
+        function move(){
+        	moveObject(planet);
+        	calcForce();
+        }
+        function moveObject(obj){
+        	obj.update(P.Core.time.dt);
+        	context.clearRect(0, 0, canvas.width, canvas.height);
+        	obj.draw(context);
+        }
+
+        function calcForce(){
+        	planet.force = P.Forces.gravity(M, planet.mass, planet.position.subtract(sun.position));
+        }
+
+
+        </script>
+    </body>
+
+</html>

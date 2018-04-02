@@ -98,6 +98,19 @@ class Vector {
         return this;
     }
 
+    projection(vec) {
+		const length = this.length();
+		const lengthVec = vec.length();
+		let proj;
+		if( (length == 0) || ( lengthVec == 0) ){
+			proj = 0;
+		}else {
+			proj = (this.x * vec.x + this.y * vec.y) / lengthVec;
+		}
+        
+		return proj;
+	}
+
     unit() {
 		const length = this.length();
 		if (length > 0) {

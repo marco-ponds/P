@@ -14,8 +14,10 @@ export default class Box extends Particle {
         const { x, y } = this.position;
 		context.strokeStyle = this.color;
         context.fillStyle = '#ffffff';
-
+        context.beginPath();
 		context.rect(x, y, this.width, this.height);
+        context.closePath();
         context.stroke();
+        context.fill();
 	}
 }
