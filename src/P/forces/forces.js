@@ -113,6 +113,19 @@ export default class Forces {
         return unit.scale(-constant * mass * G);
     }
 
+    static tension(distance, length, gravity, object) {
+        const unit = distance.unit().clone();
+        const magnitude = object.velocity.lengthSquared();
+        const { mass, velocity } = object;
+
+        return unit.scale(-(gravity.projection(distance) + mass * velocity.lengthSquared() / lengthP));
+    }
+
+    static electric(constant, q1, q1, distance) {
+        // same charge repels, diff charge attracts
+        return distance.clone().scale(constant * q1 * q2 / (distance.lengthSquared() * distance.length()));
+    }
+
     static add(forces) {
         let sum = new Vector(0, 0);
 

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8" />
+        <title>Simple Animation</title>
+
+        <style>
+            canvas {
+                position: absolute;
+            }
+
+            #canvas_bg {
+                z-index: 1;
+            }
+
+            #canvas {
+                border: 1px solid black;
+                z-index: 2;
+            }
+
+            #canvas_fg {
+                z-index: 3;
+            }
+
+        </style>
+    </head>
+
+    <body>
+        <canvas id='canvas_bg' height="600" width="800"></canvas>
+        <canvas id='canvas' height="600" width="800"></canvas>
+        <!-- Scripts -->
+        <script src="../dist/P.js"></script>
+        <script>
+        var canvas = document.getElementById('canvas');
+        var context = canvas.getContext('2d');
+        var canvas_bg = document.getElementById('canvas_bg');
+        var context_bg = canvas_bg.getContext('2d');
+
+        var G = 1;
+        var attractors;
+        var orbiters;
+        var t;
+        var t0;
+        var dt;
+        var acc;
+        var numOrbiters = 3;
+        var numAttractors = 2;
+
+        window.onload = init;
+
+        function init() {
+        	// create attractors
+        	attractors = new Array();
+        	var radiusA = new Array(20,20);
+        	var massA = new Array(100000,100000);
+        	var colorA = new Array('#ff9900','#ff9900');
+        	var posA = new Array(new P.Vector(200,300),new P.Vector(500,300));
+        	for (var i=0; i<numAttractors; i++){
+        		var attractor = new P.Ball({radius: radiusA[i], color: colorA[i], mass: massA[i], charge: 0});
+        		attractor.position = posA[i];
+        		attractor.draw(context_bg);
+        		attractors.push(attractor);
+        	}
+        	// create orbiters
+        	orbiters = new Array();
+        	var radius = new Array(15,8,8);
+        	var mass = new Array(100,100,100);
+        	var color = new Array('#0000ff','#ff0000','#00ff00');
+        	var pos = new Array(new P.Vector(400,300),new P.Vector(400,400),new P.Vector(300,400));
+        	var velo = new Array(new P.Vector(0,60),new P.Vector(10,60),new P.Vector(90,0));
+        	for (var i=0; i<numOrbiters; i++){
+        		var orbiter = new P.Ball({radius: radius[i], color: color[i], mass: mass[i], charge: 0});
+        		//var orbiter = new P.Ball(8,'#0000ff',1,0,true);
+        		orbiter.position = pos[i];
+        		orbiter.velocity = velo[i];
+        		//orbiter.position = new P.Vector(400,300);
+        		//orbiter.velocity = new P.Vector(0,60);
+        		orbiter.draw(context);
+                orbiter.force = calcForce(orbiter);
+        		orbiters.push(orbiter);
+        	}
+
+            P.CONSTANTS.GRAVITATIONAL_CONSTANT = 5;
+            P.Core.init();
+        	animFrame();
+        };
+
+        function animFrame(){
+        	requestAnimationFrame(animFrame,canvas);
+        	onTimer();
+        }
+        function onTimer(){
+            P.Core.update();
+        	move();
+        }
+        function move(){
+        	context.clearRect(0, 0, canvas.width, canvas.height);
+        	for (var i=0; i<numOrbiters; i++){
+        		var orbiter = orbiters[i];
+        		//orbiter.force = calcForce(orbiter);
+                orbiter.update(P.Core.time.dt);
+                orbiter.draw(context);
+        	}
+        }
+
+        function calcForce(orbiter){
+        	var gravity;
+        	let force = P.Forces.zero();
+        	for (var i=0; i<numAttractors; i++){
+        		var attractor = attractors[i];
+        		gravity = P.Forces.gravity(attractor.mass,orbiter.mass,orbiter.position.subtract(attractor.position));
+        		force = P.Forces.add([force, gravity]);
+        	}
+
+            return force;
+        }
+
+
+
+
+        </script>
+    </body>
+
+</html>

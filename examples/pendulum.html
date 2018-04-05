@@ -98,7 +98,7 @@
         	var tension;
             if (displ.length() >= lengthP) {
                 // tension is mg cos(theta) + mv^2/r
-        		tension = displ.unit().clone().scale(-(gravity.projection(displ)+mass*bob.velocity.lengthSquared()/lengthP));
+        		tension = P.Forces.tension(displ, lengthP, gravity, bob);//displ.unit().clone().scale(-(gravity.projection(displ)+mass*bob.velocity.lengthSquared()/lengthP));
         	}else{
         		tension = new P.Vector(0,0);
         	}

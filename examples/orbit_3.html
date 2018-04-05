@@ -38,9 +38,9 @@
         var context_bg = canvas_bg.getContext('2d');
 
         var planet;
-        var sun;
+        var sun, sun1;
         var m = 1; // planet's mass
-        var M = 1000000; // sun's mass
+        var M = 100000; // sun's mass
         var G = 1;
         var t0,dt;
         var acc, force;
@@ -50,11 +50,15 @@
         function init() {
         	// create a stationary sun
         	sun = new P.Ball({radius: 70, mass: M});
-        	sun.position = new P.Vector(400,300);
+        	sun.position = new P.Vector(150,300);
         	sun.draw(context_bg);
+
+            sun1 = new P.Ball({radius: 70, mass: M});
+            sun1.position = new P.Vector(410, 300);
+            sun1.draw(context_bg);
         	// create a moving planet
-        	planet = new P.Ball({radius: 10, mass: m });
-        	planet.position = new P.Vector(400, 200);
+        	planet = new P.Ball({radius: 5, mass: m });
+        	planet.position = new P.Vector(150, 190);
         	//planet.position = new P.Vector(400,150);
         	var r = planet.position.subtract(sun.position).length();
         	var v = Math.sqrt(G*M*m/r);
@@ -85,7 +89,9 @@
         }
 
         function calcForce(){
-        	planet.force = P.Forces.gravity(M, planet.mass, planet.position.subtract(sun.position));
+            const gravity = P.Forces.gravity(M, planet.mass, planet.position.subtract(sun.position));
+            const gravity1 = P.Forces.gravity(M, planet.mass, planet.position.subtract(sun1.position));
+        	planet.force = P.Forces.add([gravity, gravity1]);
         }
 
 
