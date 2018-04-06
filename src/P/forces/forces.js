@@ -2,7 +2,8 @@ import { Vector } from '../math';
 import {
     G,
     AIR_DRAG,
-    GRAVITATIONAL_CONSTANT
+    GRAVITATIONAL_CONSTANT,
+    COULOMB
 } from '../constants';
 
 export default class Forces {
@@ -121,9 +122,16 @@ export default class Forces {
         return unit.scale(-(gravity.projection(distance) + mass * velocity.lengthSquared() / lengthP));
     }
 
-    static electric(constant, q1, q1, distance) {
+    static electric(q1, q2, distance) {
         // same charge repels, diff charge attracts
-        return distance.clone().scale(constant * q1 * q2 / (distance.lengthSquared() * distance.length()));
+        return distance.clone().scale(COULOMB * q1 * q2 / (distance.lengthSquared() * distance.length()));
+    }
+
+    static field(k, F) {
+        // force produced by a force field on a particle
+        // GRAVITY      particle.force = P.Forces.forceField(m, G); G = P.Vector(0, 9.8);
+        // ELECTRIC     particle.force = P.Forces.forceFIeld(q, E)
+        return F.clone().scale(k);
     }
 
     static add(forces) {

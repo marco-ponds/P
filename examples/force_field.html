@@ -74,8 +74,8 @@
         function move(){
         	context.clearRect(0, 0, canvas.width, canvas.height);
 
-            p1.force = calcForce(p1, p2);
-            p2.force = calcForce(p2, p1);
+            p1.force = calcForce(p1);
+            p2.force = calcForce(p2);
 
         	p1.update(P.Core.time.dt);
             p2.update(P.Core.time.dt);
@@ -84,9 +84,9 @@
             p2.draw(context);
         }
 
-        function calcForce(p1, p2){
-            var distance = p1.position.subtract(p2.position);
-            return P.Forces.electric(p1.charge, p2.charge, distance);
+        function calcForce(p){
+            const gravity = new P.Vector((Math.sin(P.Core.time.elapsed)) * 10, -1);
+            return P.Forces.field(p.mass, gravity);
         }
 
 
