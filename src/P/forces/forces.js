@@ -127,6 +127,18 @@ export default class Forces {
         return distance.clone().scale(COULOMB * q1 * q2 / (distance.lengthSquared() * distance.length()));
     }
 
+    static lorentz(E, B, object) {
+        // Lorentz = qE + vB ( we can assume B is pointing out of the screen);
+        const { charge, velocity } = object;
+        return E.clone().scale(charge).add(velocity.perp(charge * B * velocity.length()));
+    }
+
+    static central(k, n, distance) {
+        // k > 0 repulsive, k < 0 attractive
+        // n > 0 increase with distance, n < 0 decrease
+        return distance.clone().scale(k * Math.pow(distance.length(), n-1));
+    }
+
     static field(k, F) {
         // force produced by a force field on a particle
         // GRAVITY      particle.force = P.Forces.forceField(m, G); G = P.Vector(0, 9.8);

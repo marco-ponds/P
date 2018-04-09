@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8" />
+        <title>Simple Animation</title>
+
+        <style>
+            canvas {
+                position: absolute;
+            }
+
+            #canvas_bg {
+                z-index: 1;
+            }
+
+            #canvas {
+                border: 1px solid black;
+                z-index: 2;
+            }
+
+            #canvas_fg {
+                z-index: 3;
+            }
+
+        </style>
+    </head>
+
+    <body>
+        <canvas id='canvas_bg' height="600" width="800"></canvas>
+        <canvas id='canvas' height="600" width="800"></canvas>
+        <!-- Scripts -->
+        <script src="../dist/P.js"></script>
+        <script>
+        var canvas = document.getElementById('canvas');
+        var context = canvas.getContext('2d');
+        var canvas_bg = document.getElementById('canvas_bg');
+        var context_bg = canvas_bg.getContext('2d');
+
+        var G = 1;
+        var attractors;
+        var orbiters;
+        var t;
+        var t0;
+        var dt;
+        var acc;
+        var numOrbiters = 3;
+        var numAttractors = 2;
+
+        var p1, p2;
+
+        window.onload = init;
+
+        function init() {
+        	// create attractors
+            p1 = new P.Ball({mass: 1, charge: 5, color: '#ff0000'});
+
+            p1.position = new P.Vector(100, 200);
+            p1.velocity = new P.Vector(10, 0);
+
+            P.Core.init();
+        	animFrame();
+        };
+
+        function animFrame(){
+        	requestAnimationFrame(animFrame,canvas);
+        	onTimer();
+        }
+        function onTimer(){
+            P.Core.update();
+        	move();
+        }
+        function move(){
+        	context.clearRect(0, 0, canvas.width, canvas.height);
+
+            p1.force = calcForce(p1);
+
+        	p1.update(P.Core.time.dt);
+
+            p1.draw(context);
+        }
+
+        function calcForce(p) {
+            const E = new P.Vector(1, 0);
+            const B = 0.2;
+
+            return P.Forces.lorentz(E, B, p);
+        }
+
+
+
+
+        </script>
+    </body>
+
+</html>
