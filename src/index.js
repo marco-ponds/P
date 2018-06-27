@@ -10,7 +10,8 @@ import {
     Ball,
     Box,
     Particle,
-    Wheel
+    Wheel,
+    Wall
 } from './P/entities';
 
 import {
@@ -24,6 +25,7 @@ export {
     Ball,
     Box,
     Wheel,
+    Wall,
     Forces,
     CONSTANTS,
     Core

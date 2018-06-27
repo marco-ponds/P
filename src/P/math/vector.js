@@ -107,7 +107,7 @@ class Vector {
 		}else {
 			proj = (this.x * vec.x + this.y * vec.y) / lengthVec;
 		}
-        
+
 		return proj;
 	}
 
@@ -142,6 +142,24 @@ class Vector {
             vec = new Vector(0,0);
         }
         return vec;
+    }
+
+    parallel(coeff, positive = true) {
+        const length = this.length();
+        let vec = new Vector(this.x, this.y);
+        if (length > 0) {
+            if (positive) {
+                vec.scale(coeff / length);
+            } else {
+                vec.scale(-coeff / length);
+            }
+        } else {
+            vec = new Vector(0, 0);
+        }
+    }
+
+    project(vec) {
+        return vec.parallel(this.projection(vec));
     }
 }
 
